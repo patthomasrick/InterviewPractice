@@ -108,6 +108,14 @@ class HashMap:
             self.__resize()
 
     def get(self, key: str) -> Optional[str]:
+        """Get a value from the hash map.
+
+        Args:
+            key (str): Key to retrieve.
+
+        Returns:
+            Optional[str]: String value if found, None otherwise.
+        """
         values = self.__data[self.__hash_index(key)]
         for k, v in values:
             if k == key:
@@ -115,6 +123,14 @@ class HashMap:
         return None
 
     def remove(self, key: str) -> bool:
+        """Remove a value from a hash map.
+
+        Args:
+            key (str): Key to retrieve.
+
+        Returns:
+            bool: True if removed, false otherwise.
+        """
         values = self.__data[self.__hash_index(key)]
         for pair in values:
             if pair[0] == key:
@@ -124,12 +140,26 @@ class HashMap:
         return False
 
     def __len__(self) -> int:
+        """Get the current number of elements in the hash map."""
         return self.__size
 
     def __contains__(self, key: str) -> bool:
+        """Does the hash map contain the given key?
+
+        Args:
+            key (str): Key to test.
+
+        Returns:
+            bool: True if found, false otherwise.
+        """
         return self.get(key) is not None
 
     def __iter__(self) -> Iterator[Tuple[str, str]]:
+        """Iterate over the know key-value pairs.
+
+        Yields:
+            Iterator[Tuple[str, str]]: Iterator over each key-value pair.
+        """
         for values in self.__data:
             for pair in values:
                 yield pair
