@@ -5,12 +5,29 @@ from pprint import pprint
 from typing import Any, Deque, Dict, Hashable, List, Set
 
 
-@dataclass
+@dataclass(init=False)
 class Node:
+    """
+    Very simple node implementation. Doesn't strictly need to exist but was
+    created in the event that methods need to be added per node later.
+    """
+
     value: Hashable
 
+    __count: int = 0
+
+    def __init__(self, value: Any) -> None:
+        self.value = value
+        self.__hash = Node.__count
+        Node.__count += 1
+
     def __hash__(self) -> int:
-        return hash(self.value)
+        """Hash the node's value.
+
+        Returns:
+            int: Hashed value.
+        """
+        return hash(self.__hash)
 
 
 class GraphVisitor(ABC):
@@ -69,6 +86,15 @@ class BreadthFirstSearch(GraphVisitor):
 
 class Graph(ABC):
     def traverse(self, visitor: GraphVisitor, start_node: Node) -> List[Any]:
+        """Traverse the graph according to some visitor and a start node.
+
+        Args:
+            visitor (GraphVisitor): Visitor pattern. For example, DFS or BFS.
+            start_node (Node): Starting node for the traversal.
+
+        Returns:
+            List[Any]: Ordered list of each traversed node's value.
+        """
         visitor.visitNodes([start_node])
         output = []
         for n in visitor:
@@ -78,22 +104,70 @@ class Graph(ABC):
 
     @abstractmethod
     def addNode(self, node: Node):
+        """Add a node to the graph.
+
+        Args:
+            node (Node): Node to add.
+        """
         pass
 
     @abstractmethod
     def removeNode(self, node: Node) -> bool:
+        """Remove a node from the graph.
+
+        Args:
+            node (Node): Node to remove.
+
+        Returns:
+            bool: True if the node was removed successfully.
+        """
         pass
 
     @abstractmethod
     def addEdge(self, node_from: Node, node_to: Node) -> bool:
+        """Add an edge from one node to another to the graph.
+
+        In undirected graphs, the order of from and to nodes does not matter.
+        This is not true for directed graphs. Ultimately it depends on the
+        implementation.
+
+        Args:
+            node_from (Node): Node that the edge starts with. node_to (Node):
+            Node that the edge ends at.
+
+        Returns:
+            bool: True if the edge was added, false otherwise.
+        """
         pass
 
     @abstractmethod
     def removeEdge(self, node_from: Node, node_to: Node) -> bool:
+        """Remove an edge from the graph.
+
+        Args:
+            node_from (Node): Start node of the edge.
+            node_to (Node): End node of the edge
+
+        Returns:
+            bool: True if the edge was found and removed.
+        """
         pass
 
     @abstractmethod
     def getNeighbors(self, node: Node) -> List[Node]:
+        """Get all nodes that have an edge from the passed node.
+
+        In a directed graph, "backwards" edges will not be traversed.
+
+        In undirected graphs, any edge from or to the start node will be
+        included. If the node has an edge to itself, it is also included.
+
+        Args:
+            node (Node): Start node of the edge.
+
+        Returns:
+            List[Node]: List of neighboring nodes.
+        """
         pass
 
 
@@ -141,6 +215,16 @@ class AdjacencyMatrixGraph(Graph):
         return self._setEdge(node_from, node_to, False)
 
     def _setEdge(self, node_from: Node, node_to: Node, value: bool) -> bool:
+        """Helper function to set if an edge is present.
+
+        Args:
+            node_from (Node): Start node.
+            node_to (Node): End node.
+            value (bool): True if there should be an edge.
+
+        Returns:
+            bool: True if edge was added.
+        """
         if node_from not in self.nodes or node_to not in self.nodes:
             return False
 
