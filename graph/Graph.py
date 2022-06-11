@@ -13,12 +13,14 @@ class Node:
     """
 
     value: Hashable
+    id: int
 
+    # Static counter for number of nodes initialized so far.
     __count: int = 0
 
     def __init__(self, value: Any) -> None:
         self.value = value
-        self.__hash = Node.__count
+        self.id = Node.__count
         Node.__count += 1
 
     def __hash__(self) -> int:
@@ -27,7 +29,7 @@ class Node:
         Returns:
             int: Hashed value.
         """
-        return hash(self.__hash)
+        return hash(self.id)
 
 
 class GraphVisitor(ABC):
@@ -53,6 +55,11 @@ class GraphVisitor(ABC):
 
 
 class DepthFirstSearch(GraphVisitor):
+    """Depth-first search visitor.
+
+    This is iterative and is implemented via a stack.
+    """
+
     def __init__(self) -> None:
         super().__init__()
         self._nodes: Deque[Node] = deque()
@@ -69,6 +76,11 @@ class DepthFirstSearch(GraphVisitor):
 
 
 class BreadthFirstSearch(GraphVisitor):
+    """Breadth-first search visitor.
+
+    This is iterative and is implemented via a queue.
+    """
+
     def __init__(self) -> None:
         super().__init__()
         self._nodes: Deque[Node] = deque()
